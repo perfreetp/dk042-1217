@@ -337,3 +337,99 @@
   font-weight: $font-weight-medium;
 }
 
+.trendCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.trendHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+}
+
+.trendTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.trendLegend {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.trendLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.trendLegendDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+}
+
+.trendLegendText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.trendChart {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 320rpx;
+  padding-top: $spacing-md;
+}
+
+.trendBarCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.trendBarAmount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+}
+
+.trendBarStack {
+  display: flex;
+  flex-direction: column-reverse;
+  width: 80rpx;
+  align-items: center;
+  position: relative;
+}
+
+.trendBarBg {
+  width: 100%;
+  background: $color-bg-hover;
+  border-radius: $radius-xs $radius-xs 0 0;
+  opacity: 0.3;
+  position: absolute;
+  bottom: 0;
+  z-index: 0;
+}
+
+.trendBarSegment {
+  width: 100%;
+  border-radius: $radius-xs $radius-xs 0 0;
+  position: relative;
+  z-index: 1;
+}
+
+.trendBarLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: $spacing-sm;
+  font-weight: $font-weight-medium;
+}
+

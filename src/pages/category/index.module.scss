@@ -294,6 +294,105 @@
   line-height: 1;
 }
 
+.modalSubTitle {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.modalFilterSection {
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.filterRow {
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.filterLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.filterScroll {
+  white-space: nowrap;
+}
+
+.filterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: $spacing-xs $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-button;
+  margin-right: $spacing-sm;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.filterChipActive {
+  background: $color-primary;
+}
+
+.filterChipText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.filterChipTextActive {
+  color: $color-text-white;
+}
+
+.filterChipIcon {
+  font-size: $font-size-sm;
+}
+
+.modalActions {
+  display: flex;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.modalActionBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: $spacing-sm;
+  background: rgba($color-primary, 0.1);
+  border-radius: $radius-md;
+  transition: all $transition-base;
+}
+
+.modalActionBtnSecondary {
+  background: $color-bg-hover;
+}
+
+.modalActionIcon {
+  font-size: $font-size-sm;
+}
+
+.modalActionText {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+
+  .modalActionBtnSecondary & {
+    color: $color-text-secondary;
+  }
+}
+
 .modalList {
   flex: 1;
   padding: $spacing-md;

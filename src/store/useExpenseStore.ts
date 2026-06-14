@@ -11,6 +11,9 @@ import type {
   HabitAnalysis,
   TimeRangeType,
   ShareImageData,
+  BudgetPeriodType,
+  MonthlyTrend,
+  PaymentMethod,
 } from '@/types/expense';
 import { mockExpenses } from '@/data/mockExpenses';
 import {
@@ -20,23 +23,32 @@ import {
   getLastMonthRange,
   getMonthRange,
   formatAmount,
+  getMonthRangeByDate,
+  getCategoryLabel,
+  getHourLabel,
 } from '@/utils/helpers';
 
 const STORAGE_KEY = 'light_expense_data';
 const BUDGET_KEY = 'light_expense_budget';
 const CATEGORY_BUDGET_KEY = 'light_expense_category_budget';
+const MONTHLY_BUDGET_KEY = 'light_expense_monthly_budget';
+const CATEGORY_MONTHLY_BUDGET_KEY = 'light_expense_cat_monthly_budget';
 
 interface ExpenseState {
   expenses: Expense[];
   weeklyBudget: number;
+  monthlyBudget: number;
   categoryBudgets: Partial<Record<ExpenseCategory, number>>;
+  categoryMonthlyBudgets: Partial<Record<ExpenseCategory, number>>;
   initialized: boolean;
 
   initialize: () => void;
   addExpense: (expense: Omit<Expense, 'id' | 'createdAt'>) => void;
   deleteExpense: (id: string) => void;
   setWeeklyBudget: (amount: number) => void;
+  setMonthlyBudget: (amount: number) => void;
   setCategoryBudget: (category: ExpenseCategory, amount: number) => void;
+  setCategoryMonthlyBudget: (category: ExpenseCategory, amount: number) => void;
   saveToStorage: () => void;
 }
 
@@ -47,27 +59,35 @@ const generateId = (): string => {
 export const useExpenseStore = create<ExpenseState>((set, get) => ({
   expenses: [],
   weeklyBudget: 500,
+  monthlyBudget: 2000,
   categoryBudgets: {},
+  categoryMonthlyBudgets: {},
   initialized: false,
 
   initialize: () => {
     try {
       const stored = Taro.getStorageSync(STORAGE_KEY);
       const storedBudget = Taro.getStorageSync(BUDGET_KEY);
+      const storedMonthlyBudget = Taro.getStorageSync(MONTHLY_BUDGET_KEY);
       const storedCatBudgets = Taro.getStorageSync(CATEGORY_BUDGET_KEY);
+      const storedCatMonthlyBudgets = Taro.getStorageSync(CATEGORY_MONTHLY_BUDGET_KEY);
       if (stored && Array.isArray(stored) && stored.length > 0) {
         set({
           expenses: stored,
           initialized: true,
           weeklyBudget: storedBudget || 500,
+          monthlyBudget: storedMonthlyBudget || 2000,
           categoryBudgets: storedCatBudgets || {},
+          categoryMonthlyBudgets: storedCatMonthlyBudgets || {},
         });
       } else {
         set({
           expenses: mockExpenses,
           initialized: true,
           weeklyBudget: storedBudget || 500,
+          monthlyBudget: storedMonthlyBudget || 2000,
           categoryBudgets: storedCatBudgets || { dining: 1000, shopping: 500, entertainment: 300 },
+          categoryMonthlyBudgets: storedCatMonthlyBudgets || { dining: 4000, shopping: 2000, entertainment: 1200 },
         });
         get().saveToStorage();
       }
@@ -101,6 +121,15 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
     }
   },
 
+  setMonthlyBudget: (amount) => {
+    set({ monthlyBudget: amount });
+    try {
+      Taro.setStorageSync(MONTHLY_BUDGET_KEY, amount);
+    } catch (e) {
+      console.error('[Store] Failed to save monthly budget:', e);
+    }
+  },
+
   setCategoryBudget: (category, amount) => {
     set((state) => ({
       categoryBudgets: {
@@ -112,6 +141,20 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
       Taro.setStorageSync(CATEGORY_BUDGET_KEY, get().categoryBudgets);
     } catch (e) {
       console.error('[Store] Failed to save category budget:', e);
+    }
+  },
+
+  setCategoryMonthlyBudget: (category, amount) => {
+    set((state) => ({
+      categoryMonthlyBudgets: {
+        ...state.categoryMonthlyBudgets,
+        [category]: amount,
+      },
+    }));
+    try {
+      Taro.setStorageSync(CATEGORY_MONTHLY_BUDGET_KEY, get().categoryMonthlyBudgets);
+    } catch (e) {
+      console.error('[Store] Failed to save category monthly budget:', e);
     }
   },
 
@@ -449,4 +492,133 @@ export const generateShareImageData = (year?: number, month?: number): ShareImag
     topCategories: categorySpend,
     insight: insightLines.join('；'),
   };
+};
+
+export const getMonthlyTrend = (monthsCount: number = 3): MonthlyTrend => {
+  const now = dayjs();
+  const months: MonthlyTrend['months'] = [];
+  const allCategoryTotals: Record<ExpenseCategory, number> = {} as Record<ExpenseCategory, number>;
+
+  for (let i = monthsCount - 1; i >= 0; i--) {
+    const targetDate = now.subtract(i, 'month');
+    const y = targetDate.year();
+    const m = targetDate.month() + 1;
+    const total = getMonthlyTotal(y, m);
+    const categorySpend = getCategorySpending(y, m);
+
+    categorySpend.forEach((c) => {
+      allCategoryTotals[c.category] = (allCategoryTotals[c.category] || 0) + c.amount;
+    });
+
+    months.push({
+      year: y,
+      month: m,
+      label: `${m}月`,
+      total,
+      categories: categorySpend.map((c) => ({
+        category: c.category,
+        amount: c.amount,
+      })),
+    });
+  }
+
+  const maxTotal = Math.max(...months.map((m) => m.total), 1);
+  const keyCategories = Object.entries(allCategoryTotals)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([cat]) => cat as ExpenseCategory);
+
+  return {
+    months,
+    maxTotal,
+    keyCategories,
+  };
+};
+
+export const getCategoryBudgetsStatusByPeriod = (period: BudgetPeriodType): CategoryBudget[] => {
+  const state = useExpenseStore.getState();
+  const result: CategoryBudget[] = [];
+
+  let range: { start: string; end: string };
+  let budgets: Partial<Record<ExpenseCategory, number>>;
+
+  if (period === 'week') {
+    range = getWeekRange();
+    budgets = state.categoryBudgets;
+  } else {
+    range = getMonthRange();
+    budgets = state.categoryMonthlyBudgets;
+  }
+
+  const expensesInRange = getExpensesByDateRange(range.start, range.end);
+
+  (Object.keys(budgets) as ExpenseCategory[]).forEach((category) => {
+    const budget = budgets[category] || 0;
+    const spent = expensesInRange
+      .filter((e) => e.category === category)
+      .reduce((sum, e) => sum + e.amount, 0);
+    const percentage = budget > 0 ? Math.min(Math.round((spent / budget) * 100), 999) : 0;
+    const isOver = spent > budget && budget > 0;
+    const isNear = percentage >= 80 && !isOver && budget > 0;
+    const remain = budget - spent;
+
+    result.push({
+      category,
+      budget,
+      spent,
+      percentage,
+      isOver,
+      isNear,
+      remain,
+    });
+  });
+
+  return result.sort((a, b) => b.spent - a.spent);
+};
+
+export const getTotalBudgetByPeriod = (period: BudgetPeriodType): { budget: number; spent: number; remain: number; percentage: number; isOver: boolean; isNear: boolean } => {
+  const state = useExpenseStore.getState();
+  let range: { start: string; end: string };
+  let budget: number;
+
+  if (period === 'week') {
+    range = getWeekRange();
+    budget = state.weeklyBudget;
+  } else {
+    range = getMonthRange();
+    budget = state.monthlyBudget;
+  }
+
+  const spent = getTotalByDateRange(range.start, range.end);
+  const percentage = budget > 0 ? Math.min(Math.round((spent / budget) * 100), 100) : 0;
+  const isOver = spent > budget && budget > 0;
+  const isNear = percentage >= 80 && !isOver && budget > 0;
+  const remain = budget - spent;
+
+  return { budget, spent, remain, percentage, isOver, isNear };
+};
+
+export const getFilteredExpenses = (
+  start: string,
+  end: string,
+  filters: { category?: ExpenseCategory; merchant?: string; paymentMethod?: PaymentMethod }
+): Expense[] => {
+  let expenses = getExpensesByDateRange(start, end);
+
+  if (filters.category) {
+    expenses = expenses.filter((e) => e.category === filters.category);
+  }
+  if (filters.merchant) {
+    expenses = expenses.filter((e) => e.merchant === filters.merchant);
+  }
+  if (filters.paymentMethod) {
+    expenses = expenses.filter((e) => e.paymentMethod === filters.paymentMethod);
+  }
+
+  return expenses;
+};
+
+export const getUniquePaymentMethods = (expenses: Expense[]): PaymentMethod[] => {
+  const set = new Set(expenses.map((e) => e.paymentMethod));
+  return Array.from(set);
 };

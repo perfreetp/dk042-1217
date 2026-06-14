@@ -15,6 +15,8 @@ export type MoodType = 'happy' | 'calm' | 'regret' | 'anxious';
 
 export type TimeRangeType = '7d' | '30d' | 'month';
 
+export type BudgetPeriodType = 'week' | 'month';
+
 export interface Expense {
   id: string;
   amount: number;
@@ -57,7 +59,9 @@ export interface TemplateConfig {
 
 export interface BudgetConfig {
   weeklyBudget: number;
+  monthlyBudget: number;
   categoryBudgets: Partial<Record<ExpenseCategory, number>>;
+  categoryMonthlyBudgets: Partial<Record<ExpenseCategory, number>>;
 }
 
 export interface DailySpending {
@@ -91,6 +95,21 @@ export interface MonthlyComparison {
   }>;
 }
 
+export interface MonthlyTrend {
+  months: Array<{
+    year: number;
+    month: number;
+    label: string;
+    total: number;
+    categories: Array<{
+      category: ExpenseCategory;
+      amount: number;
+    }>;
+  }>;
+  maxTotal: number;
+  keyCategories: ExpenseCategory[];
+}
+
 export interface CategoryBudget {
   category: ExpenseCategory;
   budget: number;
@@ -98,6 +117,12 @@ export interface CategoryBudget {
   percentage: number;
   isOver: boolean;
   isNear: boolean;
+  remain: number;
+}
+
+export interface CategoryDetailFilter {
+  merchant: string | null;
+  paymentMethod: PaymentMethod | null;
 }
 
 export interface HabitAnalysis {

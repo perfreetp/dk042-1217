@@ -1,16 +1,27 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
+import Taro from '@tarojs/taro';
 import dayjs from 'dayjs';
 import classnames from 'classnames';
-import type { TimeRangeType, ExpenseCategory } from '@/types/expense';
+import type { TimeRangeType, ExpenseCategory, PaymentMethod } from '@/types/expense';
 import {
   useExpenseStore,
   getTotalByDateRange,
   getCategorySpendingByRange,
   getDailySpendingByRange,
   getExpensesByDateRange,
+  getFilteredExpenses,
+  getUniquePaymentMethods,
 } from '@/store/useExpenseStore';
-import { getTimeRange, formatAmount, getCategoryIcon, getCategoryLabel } from '@/utils/helpers';
+import {
+  getTimeRange,
+  formatAmount,
+  getCategoryIcon,
+  getCategoryLabel,
+  getPaymentIcon,
+  getPaymentLabel,
+  getUniqueMerchants,
+} from '@/utils/helpers';
 import CategoryBar from '@/components/CategoryBar';
 import ExpenseCard from '@/components/ExpenseCard';
 import styles from './index.module.scss';
@@ -26,6 +37,8 @@ const CategoryPage: React.FC = () => {
   const initialize = useExpenseStore((s) => s.initialize);
   const [timeRange, setTimeRange] = useState<TimeRangeType>('month');
   const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(null);
+  const [merchantFilter, setMerchantFilter] = useState<string | null>(null);
+  const [paymentFilter, setPaymentFilter] = useState<PaymentMethod | null>(null);
 
   useEffect(() => {
     initialize();
@@ -73,10 +86,64 @@ const CategoryPage: React.FC = () => {
   const trendDays = dailySpending.slice(-Math.min(dailySpending.length, range.days));
   const weekLabels = trendDays.map((d) => dayjs(d.date).format('DD'));
 
-  const categoryDetailExpenses = useMemo(() => {
+  const categoryRawExpenses = useMemo(() => {
     if (!selectedCategory) return [];
     return rangeExpenses.filter((e) => e.category === selectedCategory);
   }, [rangeExpenses, selectedCategory]);
+
+  const availableMerchants = useMemo(
+    () => getUniqueMerchants(categoryRawExpenses),
+    [categoryRawExpenses]
+  );
+
+  const availablePayments = useMemo(
+    () => getUniquePaymentMethods(categoryRawExpenses),
+    [categoryRawExpenses]
+  );
+
+  const categoryDetailExpenses = useMemo(() => {
+    if (!selectedCategory) return [];
+    return getFilteredExpenses(range.start, range.end, {
+      category: selectedCategory,
+      merchant: merchantFilter || undefined,
+      paymentMethod: paymentFilter || undefined,
+    });
+  }, [range.start, range.end, selectedCategory, merchantFilter, paymentFilter]);
+
+  const filteredTotal = useMemo(
+    () => categoryDetailExpenses.reduce((sum, e) => sum + e.amount, 0),
+    [categoryDetailExpenses]
+  );
+
+  const handleCloseModal = () => {
+    setSelectedCategory(null);
+    setMerchantFilter(null);
+    setPaymentFilter(null);
+  };
+
+  const handleOpenCategory = (category: ExpenseCategory) => {
+    setSelectedCategory(category);
+    setMerchantFilter(null);
+    setPaymentFilter(null);
+  };
+
+  const handleSearchInReview = () => {
+    if (!selectedCategory) return;
+    const keyword = getCategoryLabel(selectedCategory);
+    Taro.switchTab({
+      url: '/pages/review/index',
+      success: () => {
+        setTimeout(() => {
+          const event = new CustomEvent('setSearchKeyword', { detail: keyword });
+          window.dispatchEvent(event);
+        }, 300);
+      },
+    });
+    handleCloseModal();
+    Taro.showToast({ title: '已跳转到复盘页搜索', icon: 'success' });
+  };
+
+  const hasActiveFilter = merchantFilter || paymentFilter;
 
   return (
     <ScrollView scrollY className={styles.container}>
@@ -123,7 +190,7 @@ const CategoryPage: React.FC = () => {
           <View
             key={item.category}
             className={styles.categoryListItem}
-            onClick={() => setSelectedCategory(item.category)}
+            onClick={() => handleOpenCategory(item.category)}
           >
             <View className={styles.categoryListLeft}>
               <Text className={styles.categoryListIcon}>{getCategoryIcon(item.category)}</Text>
@@ -177,23 +244,137 @@ const CategoryPage: React.FC = () => {
       </View>
 
       {selectedCategory && (
-        <View className={styles.modalOverlay} onClick={() => setSelectedCategory(null)}>
+        <View className={styles.modalOverlay} onClick={handleCloseModal}>
           <View className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <View className={styles.modalHeader}>
               <View className={styles.modalHeaderLeft}>
                 <Text className={styles.modalIcon}>{getCategoryIcon(selectedCategory)}</Text>
-                <Text className={styles.modalTitle}>{getCategoryLabel(selectedCategory)}明细</Text>
+                <View>
+                  <Text className={styles.modalTitle}>{getCategoryLabel(selectedCategory)}明细</Text>
+                  <Text className={styles.modalSubTitle}>
+                    共{categoryDetailExpenses.length}笔 · ¥{formatAmount(filteredTotal)}
+                  </Text>
+                </View>
               </View>
-              <View className={styles.modalClose} onClick={() => setSelectedCategory(null)}>
+              <View className={styles.modalClose} onClick={handleCloseModal}>
                 <Text className={styles.modalCloseText}>×</Text>
               </View>
             </View>
+
+            <View className={styles.modalFilterSection}>
+              <View className={styles.filterRow}>
+                <Text className={styles.filterLabel}>商家</Text>
+                <ScrollView scrollX className={styles.filterScroll}>
+                  <View
+                    className={classnames(
+                      styles.filterChip,
+                      !merchantFilter && styles.filterChipActive
+                    )}
+                    onClick={() => setMerchantFilter(null)}
+                  >
+                    <Text
+                      className={classnames(
+                        styles.filterChipText,
+                        !merchantFilter && styles.filterChipTextActive
+                      )}
+                    >
+                      全部
+                    </Text>
+                  </View>
+                  {availableMerchants.map((merchant) => (
+                    <View
+                      key={merchant}
+                      className={classnames(
+                        styles.filterChip,
+                        merchantFilter === merchant && styles.filterChipActive
+                      )}
+                      onClick={() => setMerchantFilter(merchantFilter === merchant ? null : merchant)}
+                    >
+                      <Text
+                        className={classnames(
+                          styles.filterChipText,
+                          merchantFilter === merchant && styles.filterChipTextActive
+                        )}
+                      >
+                        {merchant}
+                      </Text>
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+
+              {availablePayments.length > 1 && (
+                <View className={styles.filterRow}>
+                  <Text className={styles.filterLabel}>支付方式</Text>
+                  <ScrollView scrollX className={styles.filterScroll}>
+                    <View
+                      className={classnames(
+                        styles.filterChip,
+                        !paymentFilter && styles.filterChipActive
+                      )}
+                      onClick={() => setPaymentFilter(null)}
+                    >
+                      <Text
+                        className={classnames(
+                          styles.filterChipText,
+                          !paymentFilter && styles.filterChipTextActive
+                        )}
+                      >
+                        全部
+                      </Text>
+                    </View>
+                    {availablePayments.map((pm) => (
+                      <View
+                        key={pm}
+                        className={classnames(
+                          styles.filterChip,
+                          paymentFilter === pm && styles.filterChipActive
+                        )}
+                        onClick={() =>
+                          setPaymentFilter(paymentFilter === pm ? null : pm)
+                        }
+                      >
+                        <Text className={styles.filterChipIcon}>{getPaymentIcon(pm)}</Text>
+                        <Text
+                          className={classnames(
+                            styles.filterChipText,
+                            paymentFilter === pm && styles.filterChipTextActive
+                          )}
+                        >
+                          {getPaymentLabel(pm)}
+                        </Text>
+                      </View>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+            </View>
+
+            <View className={styles.modalActions}>
+              <View className={styles.modalActionBtn} onClick={handleSearchInReview}>
+                <Text className={styles.modalActionIcon}>🔍</Text>
+                <Text className={styles.modalActionText}>搜索同类账单</Text>
+              </View>
+              {hasActiveFilter && (
+                <View
+                  className={classnames(styles.modalActionBtn, styles.modalActionBtnSecondary)}
+                  onClick={() => {
+                    setMerchantFilter(null);
+                    setPaymentFilter(null);
+                  }}
+                >
+                  <Text className={styles.modalActionIcon}>✕</Text>
+                  <Text className={styles.modalActionText}>清除筛选</Text>
+                </View>
+              )}
+            </View>
+
             <ScrollView scrollY className={styles.modalList}>
               {categoryDetailExpenses.map((exp) => (
                 <ExpenseCard key={exp.id} expense={exp} />
               ))}
               {categoryDetailExpenses.length === 0 && (
-                <Text className={styles.emptyText}>该分类暂无消费</Text>
+                <Text className={styles.emptyText}>该条件下暂无消费记录</Text>
               )}
             </ScrollView>
           </View>

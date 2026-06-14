@@ -167,3 +167,25 @@ export const getWeekdayLabel = (day: number): string => {
   const labels = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
   return labels[day];
 };
+
+export const getMonthRangeByDate = (dateStr: string): { start: string; end: string } => {
+  const date = dayjs(dateStr);
+  const start = date.startOf('month').format('YYYY-MM-DD');
+  const end = date.endOf('month').format('YYYY-MM-DD');
+  return { start, end };
+};
+
+export const getPaymentIcon = (method: string): string => {
+  const icons: Record<string, string> = {
+    wechat: '💚',
+    alipay: '💙',
+    cash: '💵',
+    card: '💳',
+  };
+  return icons[method] || '💰';
+};
+
+export const getUniqueMerchants = (expenses: Array<{ merchant: string }>): string[] => {
+  const set = new Set(expenses.map((e) => e.merchant).filter(Boolean));
+  return Array.from(set);
+};

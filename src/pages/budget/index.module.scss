@@ -6,6 +6,37 @@
   padding-bottom: 200rpx;
 }
 
+.periodTabs {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.periodTab {
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+}
+
+.periodTabActive {
+  background: $color-primary;
+}
+
+.periodTabText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.periodTabTextActive {
+  color: $color-text-white;
+}
+
 .budgetCard {
   background: $color-bg-card;
   border-radius: $radius-lg;

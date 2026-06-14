@@ -3,14 +3,16 @@ import { View, Text, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import dayjs from 'dayjs';
 import classnames from 'classnames';
-import type { ExpenseCategory } from '@/types/expense';
+import type { ExpenseCategory, BudgetPeriodType } from '@/types/expense';
 import {
   useExpenseStore,
-  getWeeklySpending,
-  getCategoryBudgetsStatus,
+  getExpensesByDateRange,
+  getCategoryBudgetsStatusByPeriod,
+  getTotalBudgetByPeriod,
 } from '@/store/useExpenseStore';
 import {
   getWeekRange,
+  getMonthRange,
   formatAmount,
   getCategoryIcon,
   getCategoryLabel,
@@ -18,16 +20,27 @@ import {
 import { CATEGORY_CONFIG } from '@/utils/helpers';
 import styles from './index.module.scss';
 
+const PERIODS: Array<{ type: BudgetPeriodType; label: string }> = [
+  { type: 'week', label: '按周' },
+  { type: 'month', label: '按月' },
+];
+
 const BudgetPage: React.FC = () => {
   const expenses = useExpenseStore((s) => s.expenses);
   const weeklyBudget = useExpenseStore((s) => s.weeklyBudget);
+  const monthlyBudget = useExpenseStore((s) => s.monthlyBudget);
   const categoryBudgets = useExpenseStore((s) => s.categoryBudgets);
+  const categoryMonthlyBudgets = useExpenseStore((s) => s.categoryMonthlyBudgets);
   const setWeeklyBudget = useExpenseStore((s) => s.setWeeklyBudget);
+  const setMonthlyBudget = useExpenseStore((s) => s.setMonthlyBudget);
   const setCategoryBudget = useExpenseStore((s) => s.setCategoryBudget);
+  const setCategoryMonthlyBudget = useExpenseStore((s) => s.setCategoryMonthlyBudget);
   const initialize = useExpenseStore((s) => s.initialize);
+
+  const [period, setPeriod] = useState<BudgetPeriodType>('week');
   const [showModal, setShowModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [budgetInput, setBudgetInput] = useState(String(weeklyBudget));
+  const [budgetInput, setBudgetInput] = useState('');
   const [editingCategory, setEditingCategory] = useState<ExpenseCategory | null>(null);
   const [categoryBudgetInput, setCategoryBudgetInput] = useState('');
 
@@ -35,55 +48,76 @@ const BudgetPage: React.FC = () => {
     initialize();
   }, []);
 
-  const weeklySpending = useMemo(() => getWeeklySpending(), [expenses]);
-  const categoryBudgetStatus = useMemo(
-    () => getCategoryBudgetsStatus(),
-    [expenses, categoryBudgets]
+  const currentRange = useMemo(() => {
+    return period === 'week' ? getWeekRange() : getMonthRange();
+  }, [period]);
+
+  const totalBudgetStatus = useMemo(
+    () => getTotalBudgetByPeriod(period),
+    [expenses, period, weeklyBudget, monthlyBudget]
   );
-  const remain = weeklyBudget - weeklySpending;
-  const percentage =
-    weeklyBudget > 0
-      ? Math.min(Math.round((weeklySpending / weeklyBudget) * 100), 100)
-      : 0;
-  const isOverBudget = weeklySpending > weeklyBudget;
-  const isNearBudget = percentage >= 80 && !isOverBudget;
 
-  const weekRange = useMemo(() => getWeekRange(), []);
+  const categoryBudgetStatus = useMemo(
+    () => getCategoryBudgetsStatusByPeriod(period),
+    [expenses, period, categoryBudgets, categoryMonthlyBudgets]
+  );
 
-  const weekDaySpending = useMemo(() => {
-    const { start } = getWeekRange();
-    const result: Array<{ day: string; amount: number }> = [];
-    const dayNames = ['一', '二', '三', '四', '五', '六', '日'];
-    for (let i = 0; i < 7; i++) {
-      const date = dayjs(start).add(i, 'day').format('YYYY-MM-DD');
+  const { budget, spent, remain, percentage, isOver, isNear } = totalBudgetStatus;
+
+  const periodDaySpending = useMemo(() => {
+    const { start, end } = currentRange;
+    const days: Array<{ date: string; day: string; amount: number }> = [];
+    const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+    const startDate = dayjs(start);
+    const endDate = dayjs(end);
+    const diffDays = endDate.diff(startDate, 'day') + 1;
+    const displayDays = Math.min(diffDays, period === 'week' ? 7 : 15);
+
+    for (let i = 0; i < displayDays; i++) {
+      const date = startDate.add(i, 'day');
+      const dateStr = date.format('YYYY-MM-DD');
       const dayTotal = expenses
-        .filter((e) => e.date === date)
+        .filter((e) => e.date === dateStr)
         .reduce((sum, e) => sum + e.amount, 0);
-      result.push({ day: dayNames[i], amount: dayTotal });
-    }
-    return result;
-  }, [expenses]);
 
-  const maxDaySpend = Math.max(...weekDaySpending.map((d) => d.amount), 1);
+      if (period === 'week') {
+        days.push({
+          date: dateStr,
+          day: dayNames[date.day()],
+          amount: dayTotal,
+        });
+      } else {
+        days.push({
+          date: dateStr,
+          day: date.format('DD'),
+          amount: dayTotal,
+        });
+      }
+    }
+    return days;
+  }, [expenses, currentRange, period]);
+
+  const maxDaySpend = Math.max(...periodDaySpending.map((d) => d.amount), 1);
 
   const alerts = useMemo(() => {
     const items: Array<{ title: string; desc: string; type: 'red' | 'orange' | 'green' }> = [];
+    const periodLabel = period === 'week' ? '本周' : '本月';
 
-    if (isOverBudget) {
+    if (isOver) {
       items.push({
-        title: '⚠️ 本周已超预算',
-        desc: `已超出 ¥${formatAmount(weeklySpending - weeklyBudget)}`,
+        title: `⚠️ ${periodLabel}已超预算`,
+        desc: `已超出 ¥${formatAmount(spent - budget)}`,
         type: 'red',
       });
-    } else if (isNearBudget) {
+    } else if (isNear) {
       items.push({
-        title: '⚡ 本周预算即将用完',
+        title: `⚡ ${periodLabel}预算即将用完`,
         desc: `仅剩余 ¥${formatAmount(remain)}`,
         type: 'orange',
       });
     } else {
       items.push({
-        title: '✅ 本周预算充足',
+        title: `✅ ${periodLabel}预算充足`,
         desc: `还剩余 ¥${formatAmount(remain)}`,
         type: 'green',
       });
@@ -105,27 +139,33 @@ const BudgetPage: React.FC = () => {
       }
     });
 
-    const impulseThisWeek = expenses.filter((e) => {
-      const { start, end } = getWeekRange();
+    const impulseInPeriod = expenses.filter((e) => {
+      const { start, end } = currentRange;
       return e.date >= start && e.date <= end && e.isImpulse;
     });
-    if (impulseThisWeek.length > 0) {
-      const impulseTotal = impulseThisWeek.reduce((sum, e) => sum + e.amount, 0);
+    if (impulseInPeriod.length > 0) {
+      const impulseTotal = impulseInPeriod.reduce((sum, e) => sum + e.amount, 0);
       items.push({
-        title: `💥 本周冲动消费 ${impulseThisWeek.length} 笔`,
+        title: `💥 ${periodLabel}冲动消费 ${impulseInPeriod.length} 笔`,
         desc: `共 ¥${formatAmount(impulseTotal)}`,
         type: 'orange',
       });
     }
 
     return items;
-  }, [expenses, weeklyBudget, weeklySpending, categoryBudgetStatus]);
+  }, [expenses, budget, spent, isOver, isNear, remain, categoryBudgetStatus, currentRange, period]);
 
-  const progressFillClass = isOverBudget
+  const progressFillClass = isOver
     ? styles.progressFillRed
-    : isNearBudget
+    : isNear
     ? styles.progressFillOrange
     : styles.progressFillGreen;
+
+  const handleOpenSetBudget = () => {
+    const currentBudget = period === 'week' ? weeklyBudget : monthlyBudget;
+    setBudgetInput(String(currentBudget));
+    setShowModal(true);
+  };
 
   const handleSetBudget = () => {
     const val = parseFloat(budgetInput);
@@ -133,14 +173,20 @@ const BudgetPage: React.FC = () => {
       Taro.showToast({ title: '请输入有效金额', icon: 'none' });
       return;
     }
-    setWeeklyBudget(val);
+    if (period === 'week') {
+      setWeeklyBudget(val);
+    } else {
+      setMonthlyBudget(val);
+    }
     setShowModal(false);
     Taro.showToast({ title: '设置成功', icon: 'success' });
   };
 
   const handleOpenCategoryModal = (category: ExpenseCategory) => {
     setEditingCategory(category);
-    setCategoryBudgetInput(String(categoryBudgets[category] || ''));
+    const currentBudget =
+      period === 'week' ? categoryBudgets[category] : categoryMonthlyBudgets[category];
+    setCategoryBudgetInput(String(currentBudget || ''));
     setShowCategoryModal(true);
   };
 
@@ -151,7 +197,11 @@ const BudgetPage: React.FC = () => {
       Taro.showToast({ title: '请输入有效金额', icon: 'none' });
       return;
     }
-    setCategoryBudget(editingCategory, val);
+    if (period === 'week') {
+      setCategoryBudget(editingCategory, val);
+    } else {
+      setCategoryMonthlyBudget(editingCategory, val);
+    }
     setShowCategoryModal(false);
     Taro.showToast({ title: '设置成功', icon: 'success' });
   };
@@ -166,18 +216,35 @@ const BudgetPage: React.FC = () => {
     return Object.keys(CATEGORY_CONFIG) as ExpenseCategory[];
   }, []);
 
+  const currentCategoryBudgets = period === 'week' ? categoryBudgets : categoryMonthlyBudgets;
+
   return (
     <View className={styles.container}>
+      <View className={styles.periodTabs}>
+        {PERIODS.map((p) => (
+          <View
+            key={p.type}
+            className={classnames(styles.periodTab, period === p.type && styles.periodTabActive)}
+            onClick={() => setPeriod(p.type)}
+          >
+            <Text
+              className={classnames(
+                styles.periodTabText,
+                period === p.type && styles.periodTabTextActive
+              )}
+            >
+              {p.label}
+            </Text>
+          </View>
+        ))}
+      </View>
+
       <View className={styles.budgetCard}>
         <View className={styles.budgetHeader}>
-          <Text className={styles.budgetTitle}>周预算</Text>
-          <View
-            className={styles.budgetSetBtn}
-            onClick={() => {
-              setBudgetInput(String(weeklyBudget));
-              setShowModal(true);
-            }}
-          >
+          <Text className={styles.budgetTitle}>
+            {period === 'week' ? '周预算' : '月预算'}
+          </Text>
+          <View className={styles.budgetSetBtn} onClick={handleOpenSetBudget}>
             <Text className={styles.budgetSetText}>设置预算</Text>
           </View>
         </View>
@@ -193,7 +260,7 @@ const BudgetPage: React.FC = () => {
         </View>
         <View className={styles.budgetInfo}>
           <Text className={styles.budgetSpent}>
-            已消费 <Text className={styles.budgetSpentAmount}>¥{formatAmount(weeklySpending)}</Text>
+            已消费 <Text className={styles.budgetSpentAmount}>¥{formatAmount(spent)}</Text>
           </Text>
           <Text className={styles.budgetRemain}>
             剩余{' '}
@@ -257,7 +324,7 @@ const BudgetPage: React.FC = () => {
           </View>
         ))}
         {availableCategories
-          .filter((c) => !categoryBudgets[c])
+          .filter((c) => !currentCategoryBudgets[c])
           .slice(0, 2)
           .map((category) => (
             <View
@@ -268,7 +335,7 @@ const BudgetPage: React.FC = () => {
               <View className={styles.catBudgetAdd}>
                 <Text className={styles.catBudgetAddIcon}>+</Text>
                 <Text className={styles.catBudgetAddText}>
-                  为{getCategoryLabel(category)}设置预算
+                  为{getCategoryLabel(category)}设置{period === 'week' ? '周' : '月'}预算
                 </Text>
               </View>
             </View>
@@ -297,22 +364,24 @@ const BudgetPage: React.FC = () => {
         ))}
       </View>
 
-      <Text className={styles.sectionTitle}>本周每日消费</Text>
+      <Text className={styles.sectionTitle}>
+        {period === 'week' ? '本周' : '本月'}每日消费
+      </Text>
       <View className={styles.weekCard}>
         <View className={styles.weekHeader}>
           <Text className={styles.weekLabel}>
-            {weekRange.start} ~ {weekRange.end}
+            {currentRange.start} ~ {currentRange.end}
           </Text>
-          <Text className={styles.weekAmount}>¥{formatAmount(weeklySpending)}</Text>
+          <Text className={styles.weekAmount}>¥{formatAmount(spent)}</Text>
         </View>
         <View className={styles.weekDays}>
-          {weekDaySpending.map((d, index) => {
+          {periodDaySpending.map((d, index) => {
             const barHeight =
               maxDaySpend > 0
                 ? Math.max((d.amount / maxDaySpend) * 120, 8)
                 : 8;
             return (
-              <View key={index} className={styles.weekDayItem}>
+              <View key={d.date} className={styles.weekDayItem}>
                 <Text className={styles.weekDayAmount}>
                   {d.amount > 0 ? `¥${Math.round(d.amount)}` : ''}
                 </Text>
@@ -320,7 +389,9 @@ const BudgetPage: React.FC = () => {
                   className={styles.weekDayBar}
                   style={{ height: `${barHeight}rpx` }}
                 />
-                <Text className={styles.weekDayName}>周{d.day}</Text>
+                <Text className={styles.weekDayName}>
+                  {period === 'week' ? `周${d.day}` : d.day}
+                </Text>
               </View>
             );
           })}
@@ -330,11 +401,13 @@ const BudgetPage: React.FC = () => {
       {showModal && (
         <View className={styles.modalOverlay} onClick={() => setShowModal(false)}>
           <View className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <Text className={styles.modalTitle}>设置周预算</Text>
+            <Text className={styles.modalTitle}>
+              设置{period === 'week' ? '周' : '月'}预算
+            </Text>
             <Input
               className={styles.modalInput}
               type="digit"
-              placeholder="输入周预算金额"
+              placeholder={`输入${period === 'week' ? '周' : '月'}预算金额`}
               value={budgetInput}
               onInput={(e) => setBudgetInput(e.detail.value)}
             />
@@ -361,7 +434,8 @@ const BudgetPage: React.FC = () => {
                 {getCategoryIcon(editingCategory)}
               </Text>
               <Text className={styles.modalTitle}>
-                {getCategoryLabel(editingCategory)}周预算
+                {getCategoryLabel(editingCategory)}
+                {period === 'week' ? '周' : '月'}预算
               </Text>
             </View>
             <Input

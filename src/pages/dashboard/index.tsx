@@ -10,8 +10,9 @@ import {
   getFixedExpenses,
   getFixedTotal,
   getMonthlyComparison,
+  getMonthlyTrend,
 } from '@/store/useExpenseStore';
-import { getCategoryLabel, getCategoryIcon, formatAmount } from '@/utils/helpers';
+import { getCategoryLabel, getCategoryIcon, formatAmount, getCategoryColor } from '@/utils/helpers';
 import HeatMap from '@/components/HeatMap';
 import styles from './index.module.scss';
 
@@ -37,6 +38,7 @@ const DashboardPage: React.FC = () => {
   const fixedExpenses = useMemo(() => getFixedExpenses(year, month), [expenses, year, month]);
   const fixedTotal = useMemo(() => getFixedTotal(year, month), [expenses, year, month]);
   const comparison = useMemo(() => getMonthlyComparison(), [expenses]);
+  const monthlyTrend = useMemo(() => getMonthlyTrend(3), [expenses]);
 
   const getDiffClass = (diff: number) => {
     if (diff > 0) return styles.diffUp;
@@ -112,6 +114,66 @@ const DashboardPage: React.FC = () => {
               </View>
             </View>
           ))}
+        </View>
+      </View>
+
+      <Text className={styles.sectionTitle}>近3个月走势</Text>
+      <View className={styles.trendCard}>
+        <View className={styles.trendHeader}>
+          <Text className={styles.trendTitle}>总支出趋势</Text>
+          <View className={styles.trendLegend}>
+            {monthlyTrend.keyCategories.map((cat) => (
+              <View key={cat} className={styles.trendLegendItem}>
+                <View
+                  className={styles.trendLegendDot}
+                  style={{ backgroundColor: getCategoryColor(cat) }}
+                />
+                <Text className={styles.trendLegendText}>{getCategoryLabel(cat)}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+        <View className={styles.trendChart}>
+          {monthlyTrend.months.map((m) => {
+            const barHeight =
+              monthlyTrend.maxTotal > 0
+                ? Math.max((m.total / monthlyTrend.maxTotal) * 240, 16)
+                : 16;
+            return (
+              <View key={`${m.year}-${m.month}`} className={styles.trendBarCol}>
+                <Text className={styles.trendBarAmount}>
+                  {m.total > 0 ? `¥${Math.round(m.total / 100)}` : ''}
+                </Text>
+                <View className={styles.trendBarStack}>
+                  {monthlyTrend.keyCategories.map((cat, idx) => {
+                    const catData = m.categories.find((c) => c.category === cat);
+                    const catAmount = catData?.amount || 0;
+                    const catHeight =
+                      monthlyTrend.maxTotal > 0
+                        ? Math.max((catAmount / monthlyTrend.maxTotal) * 240, 0)
+                        : 0;
+                    if (catHeight <= 0) return null;
+                    return (
+                      <View
+                        key={cat}
+                        className={styles.trendBarSegment}
+                        style={{
+                          height: `${catHeight}rpx`,
+                          backgroundColor: getCategoryColor(cat),
+                          marginTop: idx > 0 ? '-1rpx' : 0,
+                        }}
+                      />
+                    );
+                  })}
+                  <View
+                    className={styles.trendBarBg}
+                    style={{ height: `${barHeight}rpx` }}
+                  />
+                </View>
+                <Text className={styles.trendBarLabel}>{m.label}</Text>
+              </View>
+            );
+          })}
         </View>
       </View>
 
