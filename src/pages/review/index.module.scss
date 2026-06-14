@@ -1,0 +1,174 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  padding: $spacing-lg;
+  padding-bottom: 200rpx;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  margin-top: $spacing-lg;
+}
+
+.sectionTitleFirst {
+  margin-top: 0;
+}
+
+.searchCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  background: $color-bg-hover;
+  border-radius: $radius-button;
+  padding: 0 $spacing-md;
+}
+
+.searchIcon {
+  font-size: $font-size-md;
+  margin-right: $spacing-sm;
+}
+
+.searchInput {
+  flex: 1;
+  height: $button-height-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  background: transparent;
+}
+
+.reviewCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.questionItem {
+  display: flex;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.questionNum {
+  width: 48rpx;
+  height: 48rpx;
+  @include flex-center;
+  background: linear-gradient(135deg, $color-primary, $color-primary-light);
+  border-radius: $radius-round;
+  flex-shrink: 0;
+  margin-right: $spacing-md;
+}
+
+.questionNumText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.questionContent {
+  flex: 1;
+}
+
+.questionText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: $line-height-normal;
+}
+
+.questionType {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  border-radius: $radius-xs;
+  margin-top: 8rpx;
+  font-size: $font-size-xs;
+}
+
+.questionTypeReflection {
+  background: rgba($color-primary, 0.1);
+  color: $color-primary;
+}
+
+.questionTypeAction {
+  background: rgba($color-warning, 0.1);
+  color: $color-warning;
+}
+
+.resultList {
+  margin-top: $spacing-md;
+}
+
+.emptyText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  text-align: center;
+  padding: $spacing-lg 0;
+}
+
+.summaryCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  box-shadow: 0 8rpx 24rpx rgba($color-primary, 0.3);
+  margin-bottom: $spacing-md;
+}
+
+.summaryTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  margin-bottom: $spacing-md;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+}
+
+.summaryLabel {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.summaryValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+.exportBtn {
+  width: 100%;
+  height: $button-height-md;
+  @include flex-center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-button;
+  margin-top: $spacing-lg;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+}
+
+.exportText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}

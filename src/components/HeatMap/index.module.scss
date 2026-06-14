@@ -1,0 +1,90 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  width: 100%;
+}
+
+.weekHeader {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: $spacing-sm;
+}
+
+.weekLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  width: calc(100% / 7);
+  text-align: center;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cell {
+  width: calc(100% / 7);
+  aspect-ratio: 1;
+  @include flex-center;
+  border-radius: $radius-xs;
+  margin-bottom: 4rpx;
+  padding: 4rpx;
+}
+
+.cellEmpty {
+  background: transparent;
+}
+
+.cellText {
+  font-size: 18rpx;
+  color: $color-text-secondary;
+  position: relative;
+  z-index: 1;
+}
+
+.heat0 {
+  background-color: $color-heat-0;
+}
+.heat1 {
+  background-color: $color-heat-1;
+}
+.heat2 {
+  background-color: $color-heat-2;
+}
+.heat3 {
+  background-color: $color-heat-3;
+  .cellText {
+    color: $color-text-white;
+  }
+}
+.heat4 {
+  background-color: $color-heat-4;
+  .cellText {
+    color: $color-text-white;
+  }
+}
+.heat5 {
+  background-color: $color-heat-5;
+  .cellText {
+    color: $color-text-white;
+  }
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: $spacing-sm;
+  gap: 6rpx;
+}
+
+.legendLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.legendBlock {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 4rpx;
+}

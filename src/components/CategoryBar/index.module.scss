@@ -1,0 +1,85 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  width: 100%;
+}
+
+.barWrap {
+  display: flex;
+  height: 24rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  margin-bottom: $spacing-md;
+  background: $color-bg-hover;
+}
+
+.barSegment {
+  height: 100%;
+  transition: width $transition-base;
+  min-width: 4rpx;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.iconDot {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-sm;
+  @include flex-center;
+}
+
+.iconText {
+  font-size: $font-size-md;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.itemLabel {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.itemCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.itemRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.itemAmount {
+  font-size: $font-size-md;
+  color: $color-expense;
+  font-weight: $font-weight-semibold;
+}
+
+.itemPercent {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}

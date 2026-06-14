@@ -1,0 +1,115 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  display: flex;
+  align-items: flex-start;
+  padding: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-sm;
+  position: relative;
+}
+
+.iconWrap {
+  width: 72rpx;
+  height: 72rpx;
+  @include flex-center;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  flex-shrink: 0;
+  margin-right: $spacing-md;
+}
+
+.icon {
+  font-size: $font-size-xl;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.merchant {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+  margin-right: $spacing-sm;
+}
+
+.amount {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-expense;
+  flex-shrink: 0;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4rpx;
+}
+
+.category {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.dot {
+  font-size: $font-size-sm;
+  color: $color-text-disabled;
+  margin: 0 2rpx;
+}
+
+.payment {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.mood {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.impulseTag {
+  background: rgba($color-error, 0.1);
+  border-radius: $radius-xs;
+  padding: 2rpx 10rpx;
+  margin-left: 8rpx;
+}
+
+.impulseText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}
+
+.note {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
+  @include text-ellipsis-multi(1);
+}
+
+.deleteBtn {
+  position: absolute;
+  right: $spacing-md;
+  top: $spacing-md;
+  padding: 4rpx 16rpx;
+  background: rgba($color-error, 0.08);
+  border-radius: $radius-sm;
+}
+
+.deleteText {
+  font-size: $font-size-xs;
+  color: $color-error;
+}

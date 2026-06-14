@@ -1,0 +1,199 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  padding: $spacing-lg;
+  padding-bottom: 200rpx;
+}
+
+.headerCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 8rpx 24rpx rgba($color-primary, 0.3);
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+}
+
+.headerMonth {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.headerDaysLeft {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.headerAmount {
+  font-size: $font-size-xxl + 12rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  margin-bottom: $spacing-sm;
+}
+
+.headerSymbol {
+  font-size: $font-size-lg;
+  margin-right: 8rpx;
+}
+
+.headerSubRow {
+  display: flex;
+  gap: $spacing-xl;
+}
+
+.headerSubItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.headerSubLabel {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 4rpx;
+}
+
+.headerSubValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  margin-top: $spacing-lg;
+}
+
+.heatCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.topCategoryCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.topItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+}
+
+.topItemLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.topItemIcon {
+  font-size: $font-size-lg;
+}
+
+.topItemInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.topItemLabel {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.topItemCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.topItemAmount {
+  font-size: $font-size-md;
+  color: $color-expense;
+  font-weight: $font-weight-semibold;
+}
+
+.fixedCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.fixedItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-sm 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.fixedLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.fixedIcon {
+  font-size: $font-size-lg;
+}
+
+.fixedName {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.fixedAmount {
+  font-size: $font-size-md;
+  color: $color-expense;
+  font-weight: $font-weight-medium;
+}
+
+.fixedTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: $spacing-md;
+  margin-top: $spacing-sm;
+  border-top: 2rpx solid $color-border;
+}
+
+.fixedTotalLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.fixedTotalAmount {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-expense;
+}
+
+.emptyText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  text-align: center;
+  padding: $spacing-lg 0;
+}

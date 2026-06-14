@@ -1,0 +1,141 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  padding: $spacing-lg;
+  padding-bottom: 200rpx;
+}
+
+.headerCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 8rpx 24rpx rgba($color-primary, 0.3);
+}
+
+.headerTitle {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: $spacing-sm;
+}
+
+.headerAmount {
+  font-size: $font-size-xxl + 12rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  margin-bottom: $spacing-sm;
+}
+
+.headerSymbol {
+  font-size: $font-size-lg;
+  margin-right: 8rpx;
+}
+
+.headerCount {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  margin-top: $spacing-lg;
+}
+
+.chartCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.impulseCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.impulseRow {
+  display: flex;
+  justify-content: space-around;
+}
+
+.impulseItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.impulseNum {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-error;
+}
+
+.impulseLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
+}
+
+.impulseNumGreen {
+  color: $color-primary;
+}
+
+.trendCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.trendRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 240rpx;
+  padding-top: $spacing-md;
+}
+
+.trendCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.trendBarWrap {
+  width: 48rpx;
+  height: 200rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.trendBar {
+  width: 40rpx;
+  border-radius: 8rpx 8rpx 0 0;
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+  min-height: 8rpx;
+  transition: height $transition-base;
+}
+
+.trendLabel {
+  font-size: 18rpx;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
+}
+
+.emptyText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  text-align: center;
+  padding: $spacing-lg 0;
+}
