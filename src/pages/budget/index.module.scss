@@ -309,3 +309,150 @@
   text-align: center;
   padding: $spacing-lg 0;
 }
+
+.catBudgetCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.catBudgetItem {
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.catBudgetItemAdd {
+  padding: $spacing-md 0;
+}
+
+.catBudgetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.catBudgetLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.catBudgetIcon {
+  font-size: $font-size-lg;
+}
+
+.catBudgetLabel {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.catBudgetRight {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+}
+
+.catBudgetSpent {
+  font-size: $font-size-md;
+  color: $color-expense;
+  font-weight: $font-weight-semibold;
+}
+
+.catBudgetTotal {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.catProgressWrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.catProgressBg {
+  flex: 1;
+  height: 16rpx;
+  background: $color-bg-hover;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.catProgressFill {
+  height: 100%;
+  border-radius: 8rpx;
+  transition: width $transition-base;
+}
+
+.catProgressFillGreen {
+  background: linear-gradient(90deg, $color-primary-light, $color-primary);
+}
+
+.catProgressFillOrange {
+  background: linear-gradient(90deg, $color-warning, #FF9800);
+}
+
+.catProgressFillRed {
+  background: linear-gradient(90deg, $color-error, #FF6B6B);
+}
+
+.catProgressText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  min-width: 60rpx;
+  text-align: right;
+}
+
+.catBudgetOverText {
+  font-size: $font-size-xs;
+  color: $color-error;
+  margin-top: 8rpx;
+}
+
+.catBudgetAdd {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm;
+}
+
+.catBudgetAddIcon {
+  font-size: $font-size-lg;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.catBudgetAddText {
+  font-size: $font-size-md;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.modalCategoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.modalCategoryIcon {
+  font-size: $font-size-xl;
+}
+
+.modalHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  text-align: center;
+  margin-top: -$spacing-md;
+  margin-bottom: $spacing-lg;
+}
+

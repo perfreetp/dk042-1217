@@ -172,3 +172,371 @@
   color: $color-text-white;
   font-weight: $font-weight-medium;
 }
+
+.exportBtns {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+}
+
+.exportBtn {
+  width: 100%;
+  height: $button-height-md;
+  @include flex-center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-button;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.98);
+  }
+}
+
+.exportBtnPrimary {
+  background: $color-text-white;
+}
+
+.exportBtnPrimaryText {
+  font-size: $font-size-md;
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.habitCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.habitHeader {
+  margin-bottom: $spacing-lg;
+}
+
+.habitTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.habitRatios {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg 0;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-lg;
+}
+
+.habitRatioItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.habitRatioNum {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.habitRatioNumOrange {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-warning;
+}
+
+.habitRatioLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
+}
+
+.habitRatioDivider {
+  width: 1rpx;
+  height: 80rpx;
+  background: $color-divider;
+}
+
+.habitInsightCard {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.habitInsightItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-sm 0;
+}
+
+.habitInsightIcon {
+  font-size: $font-size-xl;
+  min-width: 48rpx;
+  text-align: center;
+}
+
+.habitInsightContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.habitInsightTitle {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.habitInsightValue {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.shareModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  align-items: flex-end;
+}
+
+.shareModalContent {
+  background: $color-bg-card;
+  border-radius: $radius-lg $radius-lg 0 0;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.shareScroll {
+  flex: 1;
+  padding: $spacing-lg;
+}
+
+.shareCard {
+  background: linear-gradient(160deg, #10B981 0%, #059669 50%, #047857 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  box-shadow: 0 16rpx 48rpx rgba(16, 185, 129, 0.4);
+}
+
+.shareHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xl;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.shareLogo {
+  font-size: $font-size-xxl;
+}
+
+.shareAppName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.shareDate {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4rpx;
+}
+
+.shareAmount {
+  margin-bottom: $spacing-xl;
+}
+
+.shareAmountLabel {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: $spacing-xs;
+}
+
+.shareAmountValue {
+  font-size: $font-size-xxl + 16rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.shareStats {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  padding: $spacing-lg 0;
+  margin-bottom: $spacing-xl;
+}
+
+.shareStatItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.shareStatNum {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.shareStatNumOrange {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: #FFD700;
+}
+
+.shareStatNumGreen {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: #A7F3D0;
+}
+
+.shareStatLabel {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 8rpx;
+}
+
+.shareStatDivider {
+  width: 1rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.shareSectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  margin-bottom: $spacing-md;
+}
+
+.shareCategoryList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xl;
+}
+
+.shareCategoryItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+}
+
+.shareCategoryIcon {
+  font-size: $font-size-lg;
+}
+
+.shareCategoryName {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  min-width: 80rpx;
+}
+
+.shareCategoryProgress {
+  flex: 1;
+  height: 12rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.shareCategoryProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #34D399, #6EE7B7);
+  border-radius: 6rpx;
+}
+
+.shareCategoryAmount {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  min-width: 120rpx;
+  text-align: right;
+}
+
+.shareInsightBox {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+}
+
+.shareInsightLabel {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: $spacing-sm;
+}
+
+.shareInsightText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  line-height: $line-height-normal;
+}
+
+.shareFooter {
+  display: flex;
+  justify-content: center;
+  padding-top: $spacing-lg;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.2);
+}
+
+.shareSlogan {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.shareModalBtns {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  padding-top: 0;
+  border-top: 1rpx solid $color-divider;
+}
+
+.shareModalCancel {
+  flex: 1;
+  height: $button-height-md;
+  @include flex-center;
+  background: $color-bg-hover;
+  border-radius: $radius-button;
+}
+
+.shareModalCancelText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.shareModalSave {
+  flex: 2;
+  height: $button-height-md;
+  @include flex-center;
+  background: linear-gradient(135deg, $color-primary, $color-primary-light);
+  border-radius: $radius-button;
+}
+
+.shareModalSaveText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}

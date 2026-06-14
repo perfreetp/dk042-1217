@@ -13,6 +13,8 @@ export type PaymentMethod = 'wechat' | 'alipay' | 'cash' | 'card';
 
 export type MoodType = 'happy' | 'calm' | 'regret' | 'anxious';
 
+export type TimeRangeType = '7d' | '30d' | 'month';
+
 export interface Expense {
   id: string;
   amount: number;
@@ -55,6 +57,7 @@ export interface TemplateConfig {
 
 export interface BudgetConfig {
   weeklyBudget: number;
+  categoryBudgets: Partial<Record<ExpenseCategory, number>>;
 }
 
 export interface DailySpending {
@@ -72,4 +75,54 @@ export interface CategorySpending {
 export interface ReviewQuestion {
   question: string;
   type: 'reflection' | 'action';
+}
+
+export interface MonthlyComparison {
+  currentTotal: number;
+  lastTotal: number;
+  diffAmount: number;
+  diffPercentage: number;
+  categories: Array<{
+    category: ExpenseCategory;
+    currentAmount: number;
+    lastAmount: number;
+    diffAmount: number;
+    diffPercentage: number;
+  }>;
+}
+
+export interface CategoryBudget {
+  category: ExpenseCategory;
+  budget: number;
+  spent: number;
+  percentage: number;
+  isOver: boolean;
+  isNear: boolean;
+}
+
+export interface HabitAnalysis {
+  fixedExpenseRatio: number;
+  impulseExpenseRatio: number;
+  mostImpulsiveHour: number;
+  mostImpulsiveMerchantTypes: ExpenseCategory[];
+  weekdaySpending: Array<{ weekday: number; amount: number }>;
+  mostExpensiveMerchant: { name: string; amount: number };
+}
+
+export interface ShareImageData {
+  dateRange: string;
+  total: number;
+  dailyAvg: number;
+  impulseCount: number;
+  fixedRatio: number;
+  topCategories: CategorySpending[];
+  insight: string;
+}
+
+export interface TimeRange {
+  type: TimeRangeType;
+  label: string;
+  start: string;
+  end: string;
+  days: number;
 }

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import type { ExpenseCategory, CategoryConfig, PaymentConfig, MoodConfig, TemplateConfig } from '@/types/expense';
+import type { ExpenseCategory, CategoryConfig, PaymentConfig, MoodConfig, TemplateConfig, TimeRangeType, TimeRange } from '@/types/expense';
 
 export const CATEGORY_CONFIG: CategoryConfig[] = [
   { key: 'dining', label: '餐饮', color: '#F97316', icon: '🍜' },
@@ -90,6 +90,57 @@ export const getWeekRange = (date?: string): { start: string; end: string } => {
   };
 };
 
+export const getMonthRange = (year?: number, month?: number): { start: string; end: string } => {
+  const now = dayjs();
+  const y = year ?? now.year();
+  const m = month ?? now.month();
+  const firstDay = dayjs(`${y}-${String(m + 1).padStart(2, '0')}-01`);
+  const lastDay = firstDay.endOf('month');
+  return {
+    start: firstDay.format('YYYY-MM-DD'),
+    end: lastDay.format('YYYY-MM-DD'),
+  };
+};
+
+export const getTimeRange = (type: TimeRangeType): TimeRange => {
+  const now = dayjs();
+  switch (type) {
+    case '7d':
+      return {
+        type,
+        label: '近7天',
+        start: now.subtract(6, 'day').format('YYYY-MM-DD'),
+        end: now.format('YYYY-MM-DD'),
+        days: 7,
+      };
+    case '30d':
+      return {
+        type,
+        label: '近30天',
+        start: now.subtract(29, 'day').format('YYYY-MM-DD'),
+        end: now.format('YYYY-MM-DD'),
+        days: 30,
+      };
+    case 'month':
+      const { start, end } = getMonthRange();
+      return {
+        type,
+        label: '本月',
+        start,
+        end,
+        days: end.split('-')[2] ? parseInt(end.split('-')[2]) : 30,
+      };
+  }
+};
+
+export const getLastMonthRange = (): { start: string; end: string; year: number; month: number } => {
+  const lastMonth = dayjs().subtract(1, 'month');
+  const year = lastMonth.year();
+  const month = lastMonth.month();
+  const { start, end } = getMonthRange(year, month);
+  return { start, end, year, month };
+};
+
 export const generateReviewQuestions = (): Array<{ question: string; type: 'reflection' | 'action' }> => {
   const questions = [
     { question: '这个月最大的非必要支出是什么？下次能避免吗？', type: 'reflection' as const },
@@ -102,4 +153,17 @@ export const generateReviewQuestions = (): Array<{ question: string; type: 'refl
     { question: '下个月想在哪方面减少开支？', type: 'action' as const },
   ];
   return questions.sort(() => Math.random() - 0.5).slice(0, 5);
+};
+
+export const getHourLabel = (hour: number): string => {
+  if (hour >= 5 && hour < 10) return '早晨';
+  if (hour >= 10 && hour < 14) return '上午';
+  if (hour >= 14 && hour < 18) return '下午';
+  if (hour >= 18 && hour < 22) return '晚间';
+  return '深夜';
+};
+
+export const getWeekdayLabel = (day: number): string => {
+  const labels = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  return labels[day];
 };
